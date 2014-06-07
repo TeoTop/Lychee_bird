@@ -24,7 +24,7 @@ var settings = {
 				dbName = $(".message input.text#dbName").val();
 
 				if (dbHost.length<1) dbHost = "localhost";
-				if (dbName.length<1) dbName = "lychee";
+				if (dbName.length<1) dbName = "lychee_bird";
 
 				params = "createConfig&dbName=" + escape(dbName) + "&dbUser=" + escape(dbUser) + "&dbPassword=" + escape(dbPassword) + "&dbHost=" + escape(dbHost);
 				lychee.api(params, function(data) {
@@ -261,6 +261,7 @@ var settings = {
 	
 				params = "takePicture&rasp=" + capture;
 				lychee.api(params, function(data) {
+				console.log(data);
 					if (data===true) {
 						lychee.load();
 					} else {lychee.error(null, params, data)};
@@ -278,11 +279,13 @@ var settings = {
 			item += "<select id='rasp_sel'> \
 				<option value='all'>All</option> \
 				";
-			
-			$.each(data, function(index) {
-				item += "<option value="+this.adresse+">"+this.adresse+"</option> \
-				";
-			});
+				
+			if(data!="false"){
+				$.each(data, function(index) {
+					item += "<option value="+this.adresse+">"+this.adresse+"</option> \
+					";
+				});
+			}
 			
 			item += "</select> \
 				";
@@ -326,10 +329,12 @@ var settings = {
 				<option value='all'>All</option> \
 				";
 			
-			$.each(data, function(index) {
-				item += "<option value="+this.adresse+">"+this.adresse+"</option> \
-				";
-			});
+			if(data!="false"){
+				$.each(data, function(index) {
+					item += "<option value="+this.adresse+">"+this.adresse+"</option> \
+					";
+				});
+			}
 			
 			item += "</select> \
 				";
@@ -340,12 +345,21 @@ var settings = {
 	},
 	
 	setNetwork: function(){
+
 		var buttons,
 			capture;
 
-			lychee.api("setNetwork", function(data) {
-				if (data===false) {lychee.error(null, "setNetwork", data)};
-			});
+			
+		buttons = [
+			["Launch search", function() {
+				lychee.api("setNetwork", function(data) {
+					console.log(data);
+				});
+			}],
+			["Cancel", function() {}]
+		];
+		
+		modal.show("Search Raspberry Pi","Launch a search of Raspberry Pi on the network.", buttons);
 
 	}
 

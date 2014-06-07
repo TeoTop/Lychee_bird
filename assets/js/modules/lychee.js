@@ -37,7 +37,7 @@ var lychee = {
 
 	init: function() {
 
-		lychee.api("init", function(data) {
+		lychee.api_sync("init", function(data) {
 
 			if (data.loggedIn!==true) {
 				lychee.setMode("public");
@@ -82,6 +82,44 @@ var lychee = {
 			url: lychee.api_path,
 			data: "function=" + params,
 			dataType: "text",
+			success: function(data) {
+
+				setTimeout(function() { loadingBar.hide() }, 100);
+
+				if (typeof data==="string"&&data.substring(0, 7)==="Error: ") {
+					lychee.error(data.substring(7, data.length), params, data);
+					return false;
+				}
+
+				if (data==="1") data = true;
+				else if (data==="") data = false;
+
+				if (typeof data==="string"&&data.substring(0, 1)==="{"&&data.substring(data.length-1, data.length)==="}") data = $.parseJSON(data);
+
+				if (lychee.debugMode) console.log(data);
+
+				callback(data);
+
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+
+				lychee.error("Server error or API not found.", params, errorThrown);
+
+			}
+		});
+
+	},
+	
+	api_sync: function(params, callback, loading) {
+
+		if (loading==undefined) loadingBar.show();
+
+		$.ajax({
+			type: "POST",
+			url: lychee.api_path,
+			data: "function=" + params,
+			dataType: "text",
+			async:false,
 			success: function(data) {
 
 				setTimeout(function() { loadingBar.hide() }, 100);
@@ -227,9 +265,10 @@ var lychee = {
 			albums.load();
 
 		}
+		
 		//notification pour les images dans le dossier import
 		if(lychee.username!=""){
-			setInterval(upload.start.checkServer,2000);
+			setInterval(upload.start.checkServer,10000);
 		}
 	},
 

@@ -11,7 +11,7 @@ if (!defined('LYCHEE')) exit('Error: Direct access is not allowed!');
 
 function getRasp(){
 	global $database;
-	
+	$return = false;
 	$result = $database->query("SELECT * FROM lychee_rasp;");
 	while($row = $result->fetch_object()) {
 		// Info
